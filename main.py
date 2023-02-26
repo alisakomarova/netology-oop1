@@ -49,20 +49,6 @@ class Student:
             return
         return self.avg_grade(self.grades) < other.avg_grade(other.grades)
 
-def avg_grade_for_course(students_list, course_name):
-    for student in students_list:
-        sum_of_one_course = 0
-        count = 0
-        for course in student.grades.keys():
-            if course == course_name:
-                for grades_list in student.grades.values():
-                    sum_of_one_course += sum(grades_list)
-                    count += len(grades_list)
-                if count == 0:
-                    return 'Нет оценок'
-        avg = sum_of_one_course / count
-        return avg
-
 class Mentor:
     def __init__(self, name, surname):
         self.name = name
@@ -102,20 +88,6 @@ class Lecturer(Mentor):
             return
         return self.avg_grade(self.grades) < other.avg_grade(other.grades)
 
-    def avg_grade_for_course(lecturers_list, course_name):
-        for lecturer in lecturers_list:
-            sum_of_one_course = 0
-            count = 0
-            for course in lecturer.grades.keys():
-                if course == course_name:
-                    for grades_list in lecturer.grades.values():
-                        sum_of_one_course += sum(grades_list)
-                        count += len(grades_list)
-                    if count == 0:
-                        return 'Нет оценок'
-            avg = sum_of_one_course / count
-            return avg
-
 class Reviewer(Mentor):
 
     def rate_hw(self, student, course, grade):
@@ -131,6 +103,22 @@ class Reviewer(Mentor):
         res = f'Имя: {self.name}\nФамилия: {self.surname}'
         return res
 
+def avg_grade_common(people_list, course_name):
+    sum_of_one_course = 0
+    count = 0
+    for person in people_list:
+        sum_of_one_person = 0
+        count_of_one_person = 0
+        for course, grades_list in person.grades.items():
+            if course == course_name:
+                sum_of_one_person += sum(grades_list)
+                count_of_one_person += len(grades_list)
+        sum_of_one_course += sum_of_one_person
+        count += count_of_one_person
+    if count == 0:
+        return 'Нет оценок'
+    avg = sum_of_one_course / count
+    return avg
 
 list_of_students = []
 list_of_lecturers = []
@@ -154,11 +142,11 @@ second_reviewer = Reviewer('Andrey', 'Andreev')
 second_reviewer.courses_attached += ['Python']
 second_reviewer.courses_attached += ['SQL']
 
-cool_reviewer.rate_hw(best_student, 'Python', 8)
 cool_reviewer.rate_hw(best_student, 'Python', 10)
-cool_reviewer.rate_hw(best_student, 'Git', 10)
-cool_reviewer.rate_hw(second_student, 'Python', 3)
-second_reviewer.rate_hw(second_student, 'SQL', 7)
+cool_reviewer.rate_hw(best_student, 'Python', 5)
+cool_reviewer.rate_hw(best_student, 'Git', 9)
+cool_reviewer.rate_hw(second_student, 'Python', 10)
+second_reviewer.rate_hw(second_student, 'SQL', 6)
 second_reviewer.rate_hw(second_student, 'Python', 10)
 
 cool_lecturer = Lecturer('Vasiliy', 'Vasilyev')
@@ -178,17 +166,23 @@ best_student.rate_hw(cool_lecturer, 'SQL', 10)
 best_student.rate_hw(second_lecturer, 'SQL', 7)
 second_student.rate_hw(second_lecturer, 'Python', 10)
 
-print(list_of_students)
-print(list_of_lecturers)
 print(best_student)
 print(second_student)
 print(cool_lecturer)
 print(second_lecturer)
-print(best_student<second_student)
-print(second_lecturer<cool_lecturer)
+print(f'Средний балл у best_student ниже, чем у second_student? - {best_student<second_student}')
+print(f'Средний балл у second_lecturer ниже, чем у cool_lecturer? - {second_lecturer<cool_lecturer}')
 
+avg_python = avg_grade_common(list_of_students, 'Python')
+avg_sql = avg_grade_common(list_of_students, 'SQL')
+avg_git = avg_grade_common(list_of_students, 'Git')
+print(f'Средний балл по курсу Python среди всех студентов: {avg_python}')
+print(f'Средний балл по курсу SQL среди всех студентов: {avg_sql}')
+print(f'Средний балл по курсу Git среди всех студентов: {avg_git}')
 
-list_of_students = [best_student, second_student]
-list_of_lecturers = [cool_lecturer, second_lecturer]
-print(avg_grade_for_course(list_of_students, 'Python'))
-print(avg_grade_for_course(list_of_lecturers, 'SQL'))
+avg_python_lecturers = avg_grade_common(list_of_lecturers, 'Python')
+avg_sql_lecturers = avg_grade_common(list_of_lecturers, 'SQL')
+avg_git_lecturers = avg_grade_common(list_of_lecturers, 'Git')
+print(f'Средний балл по курсу Python среди всех лекторов: {avg_python_lecturers}')
+print(f'Средний балл по курсу SQL среди всех лекторов: {avg_sql_lecturers}')
+print(f'Средний балл по курсу Git среди всех лекторов: {avg_git_lecturers}')
